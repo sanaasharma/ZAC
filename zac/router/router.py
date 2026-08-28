@@ -2,6 +2,7 @@ import time
 import subprocess
 import heapq
 import math
+from zac.ds.architecture import _zac_dist
 from random import seed, randrange
 from copy import deepcopy
 from itertools import chain
@@ -63,7 +64,7 @@ class Router_mixin:
             # remain_graph.append(gate[1])
         
         if not(self.routing_strategy == "mis" or self.routing_strategy == "maximalis"):
-            remain_graph = sorted(remain_graph, key=lambda x: (math.dist(self.architecture.exact_SLM_location_tuple(initial_mapping[x]),\
+            remain_graph = sorted(remain_graph, key=lambda x: (_zac_dist(self.architecture.exact_SLM_location_tuple(initial_mapping[x]),\
                                                                          self.architecture.exact_SLM_location_tuple(gate_mapping[x]))), reverse=True)
         
         id_layer_start = len(self.result_json['instructions'])
@@ -102,7 +103,7 @@ class Router_mixin:
                             remain_graph.append(q)
                 
                 if not(self.routing_strategy == "mis" or self.routing_strategy == "maximalis"):
-                    remain_graph = sorted(remain_graph, key=lambda x: (math.dist(self.architecture.exact_SLM_location_tuple(final_mapping[x]), \
+                    remain_graph = sorted(remain_graph, key=lambda x: (_zac_dist(self.architecture.exact_SLM_location_tuple(final_mapping[x]), \
                                                                                 self.architecture.exact_SLM_location_tuple(gate_mapping[x]))), reverse=True)
                 while remain_graph:                
                     # graph construction

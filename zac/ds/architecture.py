@@ -1,5 +1,22 @@
 import math
+import os
 import sys
+
+
+# Resolve the metric ONCE at import. _zac_dist is called millions of times while building
+# the intermediate-placement cost matrix; doing an os.environ lookup per call made the
+# manhattan path pathologically slow (the placement stage went from ~0.2s to >1h).
+_ZAC_MANHATTAN = os.environ.get("ZAC_DIST", "euclidean") == "manhattan"
+
+
+def _zac_dist(p1, p2, _manh=_ZAC_MANHATTAN, _dist=math.dist):
+    """Distance metric for ZAC's cost/timing. Euclidean by default (the native
+    diagonal-AOD model); set env ZAC_DIST=manhattan to use L1 (axis-aligned)."""
+    if _manh:
+        return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
+    return _dist(p1, p2)
+
+
 class AOD:
     """class to AOD array."""
     def __init__(self, aod_spec: dict):
@@ -285,7 +302,7 @@ class Architecture:
     def distance(self, idx1, r1, c1, idx2, r2, c2):
         p1 = self.exact_SLM_location(idx1, r1, c1)
         p2 = self.exact_SLM_location(idx2, r2, c2)
-        return math.dist(p1, p2) # Euclidean distance    
+        return _zac_dist(p1, p2)  # ZAC_DIST env: euclidean (default) or manhattan
     
     def nearest_storage_site(self, idx, r, c):
         slm = self.dict_SLM[idx]
@@ -354,16 +371,16 @@ class Architecture:
             exact_site = self.exact_SLM_location(site[0], site[1], site[2])
             # return math.dist(storage_site1, exact_site) + math.dist(storage_site2, exact_site)
             if r1 == r2 and idx1 == idx2:
-                dis = min(max(math.dist(storage_site1, exact_site), math.dist(storage_site2, exact_site)), dis)
+                dis = min(max(_zac_dist(storage_site1, exact_site), _zac_dist(storage_site2, exact_site)), dis)
             else:
-                dis = min( math.dist(storage_site1, exact_site) + math.dist(storage_site2, exact_site), dis )
+                dis = min( _zac_dist(storage_site1, exact_site) + _zac_dist(storage_site2, exact_site), dis )
         return dis
     
 
     def movement_duration(self, x1, y1, x2, y2):
         # d /t^2 = a = 2750m/s
         a = 0.00275
-        d = math.dist((x1, y1), (x2, y2))
+        d = _zac_dist((x1, y1), (x2, y2))
         # d= 15
         t = math.sqrt(d/a)
         return t
