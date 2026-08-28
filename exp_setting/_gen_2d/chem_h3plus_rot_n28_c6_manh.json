@@ -1,0 +1,20 @@
+{
+    "qasm_list": [
+        "/Users/sanaasharma/Documents/nanoqt-cambridge-collaboration/naqc_pipeline/zac_calculations/ZAC/benchmark/hpca/chem_h3plus_rot.qasm"
+    ],
+    "zac_setting": [
+        {
+            "arch_spec": "/Users/sanaasharma/Documents/nanoqt-cambridge-collaboration/naqc_pipeline/zac_calculations/ZAC/hardware_spec/_gen_2d/full_4aod_n28_c6.json",
+            "dependency": true,
+            "dir": "/Users/sanaasharma/Documents/nanoqt-cambridge-collaboration/naqc_pipeline/zac_calculations/ZAC/result/zac/_gen_2d/n28_c6_manh/",
+            "routing_strategy": "maximalis_sort",
+            "trivial_placement": false,
+            "dynamic_placement": true,
+            "use_window": true,
+            "window_size": 1000,
+            "use_verifier": false
+        }
+    ],
+    "simulation": false,
+    "animation": false
+}
